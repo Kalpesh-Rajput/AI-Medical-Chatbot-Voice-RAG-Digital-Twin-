@@ -1,13 +1,10 @@
-
 import streamlit as st
 import pyaudio
 import wave
 import speech_recognition as sr
 import tempfile
-
 from backend.rag import answer_query_with_cache
 from backend.digital_twin import PatientDigitalTwin
-
 
 # ---------------------------------------------------------
 # PAGE SETTINGS
@@ -24,9 +21,6 @@ if "twin" not in st.session_state:
 
 if "history" not in st.session_state:
     st.session_state.history = []
-
-if "voice_mode" not in st.session_state:
-    st.session_state.voice_mode = False
 
 
 # ---------------------------------------------------------
@@ -48,7 +42,7 @@ if st.sidebar.button("🔄 Refresh Vitals"):
 
 
 # ---------------------------------------------------------
-# VOICE RECORDING FUNCTION
+# VOICE RECORDING FUNCTION (WORKS 100% ON WINDOWS)
 # ---------------------------------------------------------
 def record_audio(duration=5, filename="voice.wav"):
     CHUNK = 1024
@@ -88,24 +82,25 @@ def record_audio(duration=5, filename="voice.wav"):
 # ---------------------------------------------------------
 st.subheader("💬 Ask a medical question")
 
-user_query = st.text_input("Type your question:", key="text_input_query")
+# TEXT INPUT
+user_query = st.text_input("Type your question:")
 
 # VOICE INPUT
 st.write("🎤 **Or speak your question (5 seconds)**")
 
 if st.button("Record Voice"):
-    st.session_state.voice_mode = True
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
         audio_file = record_audio(duration=5, filename=tmp.name)
 
+        # Speech Recognition
         recognizer = sr.Recognizer()
         with sr.AudioFile(audio_file) as source:
-            audio_data = recognizer.record(source)
+            audio = recognizer.record(source)
 
         try:
-            text = recognizer.recognize_google(audio_data)
+            text = recognizer.recognize_google(audio)
             st.success(f"🗣 You said: {text}")
-            user_query = text
+            user_query = text  # autofill text input
         except:
             st.warning("Could not understand the voice.")
 
@@ -119,11 +114,9 @@ vitals_short = (
     f"SpO2={vitals['oxygen_saturation']}"
 )
 
-response = None  # Initialize safely
-
 if st.button("Ask"):
     if user_query.strip():
-        with st.spinner("🔍 Retrieving medical context and generating answer..."):
+        with st.spinner("🔍 Retrieving medical context + generating answer..."):
             response = answer_query_with_cache(
                 query=user_query,
                 k=3,
@@ -131,46 +124,28 @@ if st.button("Ask"):
                 include_vitals=vitals_short,
             )
 
-        # Store messages
         st.session_state.history.append(("You", user_query))
         st.session_state.history.append(("Bot", response["answer"]))
 
-    else:
-        st.warning("Please type or speak a question.")
-
-
-# ---------------------------------------------------------
-# DISPLAY CHAT HISTORY — NEWEST FIRST
-# ---------------------------------------------------------
-if st.session_state.history:
-    st.write("## 💬 Conversation History")
-
-    for role, msg in reversed(st.session_state.history):
-        if role == "You":
-            st.markdown(f"**🧑 You:** {msg}")
-        else:
-            st.markdown(f"**🤖 Bot:** {msg}")
-
-    # -----------------------------------------------------
-    # SAFE: Show RAG sources only if response exists
-    # -----------------------------------------------------
-    if response and st.session_state.history[-1][0] == "Bot":
-        st.markdown("### 📚 Sources:")
-        for src in response["sources"]:
-            url = src.get("source", "")
-            if url:
-                st.markdown(f"- [{url}]({url})")
-            else:
-                st.markdown(f"- {src}")
+        st.write("### 💬 Conversation History")
+        for role, msg in st.session_state.history:
+            st.markdown(f"**{role}:** {msg}")
 
         if response.get("cached"):
             st.success("⚡ Cached Answer")
         else:
             st.info("✨ Fresh Answer")
 
+        st.write("### 📚 Sources")
+        for src in response["sources"]:
+            st.write(f"- {src.get('source', src)}")
+
+    else:
+        st.warning("Please type or speak a question.")
+
 
 # ---------------------------------------------------------
 # FOOTER
 # ---------------------------------------------------------
 st.write("---")
-st.markdown("⚠️ **Disclaimer:** This tool is not a medical diagnosis system. Always consult a doctor.")
+st.markdown("⚠️ **Disclaimer:** Not a medical diagnosis tool. Consult a doctor for medical advice.")

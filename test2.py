@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pyaudio
 import wave
@@ -47,8 +46,8 @@ if st.sidebar.button("🔄 Refresh Vitals"):
     st.rerun()
 
 
-# ---------------------------------------------------------
-# VOICE RECORDING FUNCTION
+# -------------------------------------------------------
+# VOICE RECORDING FUNCTION (Works on Windows/Mac/Linux)
 # ---------------------------------------------------------
 def record_audio(duration=5, filename="voice.wav"):
     CHUNK = 1024
@@ -119,8 +118,6 @@ vitals_short = (
     f"SpO2={vitals['oxygen_saturation']}"
 )
 
-response = None  # Initialize safely
-
 if st.button("Ask"):
     if user_query.strip():
         with st.spinner("🔍 Retrieving medical context and generating answer..."):
@@ -131,7 +128,7 @@ if st.button("Ask"):
                 include_vitals=vitals_short,
             )
 
-        # Store messages
+        # Store history (append at end)
         st.session_state.history.append(("You", user_query))
         st.session_state.history.append(("Bot", response["answer"]))
 
@@ -151,22 +148,21 @@ if st.session_state.history:
         else:
             st.markdown(f"**🤖 Bot:** {msg}")
 
-    # -----------------------------------------------------
-    # SAFE: Show RAG sources only if response exists
-    # -----------------------------------------------------
-    if response and st.session_state.history[-1][0] == "Bot":
+    # Show sources only for last response
+    if st.session_state.history[-1][0] == "Bot":
+        last_sources = response["sources"]
         st.markdown("### 📚 Sources:")
-        for src in response["sources"]:
+        for src in last_sources:
             url = src.get("source", "")
             if url:
                 st.markdown(f"- [{url}]({url})")
             else:
                 st.markdown(f"- {src}")
 
-        if response.get("cached"):
-            st.success("⚡ Cached Answer")
-        else:
-            st.info("✨ Fresh Answer")
+    if response.get("cached"):
+        st.success("⚡ Cached Answer")
+    else:
+        st.info("✨ Fresh Answer")
 
 
 # ---------------------------------------------------------
@@ -174,3 +170,4 @@ if st.session_state.history:
 # ---------------------------------------------------------
 st.write("---")
 st.markdown("⚠️ **Disclaimer:** This tool is not a medical diagnosis system. Always consult a doctor.")
+
