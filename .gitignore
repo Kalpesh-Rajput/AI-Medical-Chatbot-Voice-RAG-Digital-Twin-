@@ -1,0 +1,40 @@
+# Ignore virtual environments
+medicalenv/
+venv/
+env/
+.venv/
+
+# Ignore environment variables
+.env
+
+# Ignore ChromaDB database folder
+chroma_db/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore build/packaging
+*.egg-info/
+dist/
+build/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore logs
+*.log
+
+# Ignore audio temp files
+*.wav
+*.mp3
+*.ogg
+
+# Ignore Streamlit cache
+.streamlit/
