@@ -128,24 +128,10 @@ Guidelines:
 Answer:
 ```
 
----
-
-## 7. Deployment & Running Steps
-
-**Local (development):**
-1. Create conda env with Python 3.10.
-2. `pip install -r requirements.txt`
-3. Add Groq API key to `.env` as `GROQ_API_KEY=...`
-4. Run ingestion: `python scripts/ingest.py` (creates `chroma_db/`)
-5. Run app: `streamlit run app.py`
-
-**Streamlit Cloud (production demo):**
-- Use Groq API (no local LLM). Ensure `.env` secrets configured in Streamlit's dashboard or use GitHub Actions secrets.
-- Push repo to GitHub, connect to Streamlit Cloud, set `GROQ_API_KEY` as secret.
 
 ---
 
-## 8. Security & Ethics
+## 7. Security & Ethics
 
 - **Disclaimer** visible in UI: not for medical diagnosis.
 - **Data privacy:** Do not log PII; user voice data transient.
@@ -153,7 +139,7 @@ Answer:
 
 ---
 
-## 9. Future Improvements
+## 8. Future Improvements
 
 - Add user authentication & role-based access.
 - Replace PyAudio flow with browser-based WebRTC for cross-platform voice.
@@ -163,7 +149,7 @@ Answer:
 
 ---
 
-## 10. Appendix & Files
+## 09. Appendix & Files
 - Project files: `app.py`, `backend/`, `scripts/ingest.py`, `requirements.txt`
 - Assignment PDF used: `/mnt/data/Fresher — Technical Problem Statements 2 - Takeaway test_AI-ML.pdf`
 
