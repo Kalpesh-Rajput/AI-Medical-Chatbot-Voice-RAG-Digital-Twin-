@@ -1,6 +1,8 @@
 import time
 from collections import OrderedDict
 from typing import Any, Optional, Tuple
+# LRU: Least Recently Used
+# TTL: Time To Live (expiry time)
 
 class LRUCacheTTL:
     """

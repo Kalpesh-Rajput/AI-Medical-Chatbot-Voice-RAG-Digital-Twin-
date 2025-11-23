@@ -1,7 +1,5 @@
 # Medical Chatbot — Project Documentation
 
-**Based on assignment PDF:** `/mnt/data/Fresher — Technical Problem Statements 2 - Takeaway test_AI-ML.pdf`
-
 ---
 
 ## 1. Project Summary
