@@ -2,7 +2,7 @@
 import json
 import hashlib
 from typing import Tuple, List, Dict, Any
-from patches.fix_numpy2 import *
+# from patches.fix_numpy2 import *
 
 import chromadb
 from sentence_transformers import SentenceTransformer
