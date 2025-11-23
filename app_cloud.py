@@ -132,6 +132,7 @@ import speech_recognition as sr
 
 from backend.rag import answer_query_with_cache
 from backend.digital_twin import PatientDigitalTwin
+import patches.fix_numpy2
 
 
 # ==========================================================
